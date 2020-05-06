@@ -1,0 +1,1 @@
+Use tsc to build .ts files into .js files. The .js files should appear in the /build folder. Run node index.js to run the file.
