@@ -2,15 +2,15 @@ import Manager from "./manager";
 import Shop from './shop';
 
 export default class Account {
-    cash: number;
-    shops: Shop[];
-    upgrades: [];
-    managers: Manager[];
+    _cash: number;
+    _shops: Shop[];
+    _upgrades: [];
+    _managers: Manager[];
     // investors: [];
 
     // make a new account from scratch
     constructor(cash: number = 0, shops: Shop[] = [], managers: Manager[] = []) {
-        this.cash = cash;
+        this._cash = cash;
 
         // If new account create shop objects and assign to array
         if (shops.length === 0) {
@@ -46,7 +46,7 @@ export default class Account {
             shop = new Shop ('Oil Company', 0, 29668737024, 25798901760, 1.07, 36864)
             newShops.push(shop)
 
-            this.shops = newShops;
+            this._shops = newShops;
         }
 
         // If new account create manager objects and assign to array
@@ -80,28 +80,28 @@ export default class Account {
             manager = new Manager('Derrick Plainview', 100000000000, false);
             newManagers.push(manager);
 
-            this.managers = newManagers;
+            this._managers = newManagers;
         }
     }
 
-    getCash() {
-        return this.cash;
+    get cash() {
+        return this._cash;
     }
 
-    setCash(cash: number) {
-        this.cash += cash;
+    set cash(cash: number) {
+        this._cash += cash;
     }
 
-    getUpgrades() {
-        return this.upgrades;
+    get upgrades() {
+        return this._upgrades;
     }
 
-    getManagers() {
-        return this.managers;
+    get managers() {
+        return this._managers;
     }
 
-    getShops() {
-        return this.shops;
+    get shops() {
+        return this._shops;
     }
 
     upgradeShop(shopName: string, amount: number) {
@@ -111,7 +111,7 @@ export default class Account {
             return;
         }
         console.log(index);
-        this.setCash(-1 * this.shops[index].purchase(amount));
+        this.cash = -1 * this.shops[index].purchase(amount);
     }
     /* getInvestors() {
         return this.investors;

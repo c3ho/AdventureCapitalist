@@ -1,39 +1,43 @@
 export default class Shop {
-    amount: number;
-    cost: number;
-    revenue: number;
-    timeOut: number;
-    name: string;
-    coefficient: number;
-    currCost: number;
+    private _amount: number;
+    private _cost: number;
+    private _revenue: number;
+    private _timeOut: number;
+    private _name: string;
+    private _coefficient: number;
+    private _currCost: number;
 
     constructor(name: string, amount: number = 0, revenue: number, cost: number = 0, coefficient: number = 0, timeOut: number = 0){
-        this.name = name;
-        this.amount = amount;
-        this.revenue = revenue;
-        this.coefficient = coefficient;
-        this.timeOut = timeOut;
+        this._name = name;
+        this._amount = amount;
+        this._revenue = revenue;
+        this._coefficient = coefficient;
+        this._timeOut = timeOut;
         // base cost
-        this.cost = cost;
-        this.currCost = cost;
+        this._cost = cost;
+        this._currCost = cost;
     }
 
-    getAmount() {
-        return this.amount;
+    get name(): string {
+        return this._name;
+    }
+
+    get amount(): number {
+        return this._amount;
     }
 
     // Returns current cost of upgrading shop
-    getCost() {
-        return Math.round(100 * this.currCost)/100;
+    get cost(): number {
+        return Math.round(100 * this._currCost)/100;
     }
 
-    getTimeout() {
-        return this.timeOut;
+    get timeout() {
+        return this._timeOut;
     }
 
     purchaseOne() {
-        this.amount += this.amount;
-        this.currCost *= this.coefficient;
+        this._amount += 1;
+        this._currCost *= this._coefficient;
     }
 
     /**
@@ -45,15 +49,15 @@ export default class Shop {
     purchase(amount: number): number {
         let totalCost: number = 0;
         for (let i = 0; i < amount; i++) {
-            this.amount++;
-            this.currCost = Math.round(Math.pow(this.coefficient, this.amount) * this.cost * 100) / 100
-            totalCost += this.currCost;
+            this._amount++;
+            this._currCost = Math.round(Math.pow(this._coefficient, this.amount) * this.cost * 100) / 100
+            totalCost += this._currCost;
         }
         console.log(totalCost);
         return totalCost;
     }
 
-    setTimeout(timeOut: number) {
-        this.timeOut = timeOut
+    set timeOut(timeOut: number) {
+        this._timeOut = timeOut
     }
 }
