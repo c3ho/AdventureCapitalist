@@ -131,12 +131,10 @@ export default class Account {
         if (index < 0) {
             return;
         }
-        // get name of the shop 
         // its 1 : 1 index for managers + shops
         this.managedShops = this.shops[index].name
         // auto the business
         this.autoBusiness(this.shops[index]);
-        // const auto = setInterval(this.cash = revenue, interval);
     }
 
     // Auto Manage business
