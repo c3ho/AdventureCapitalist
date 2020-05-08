@@ -35,6 +35,10 @@ export default class Shop {
         return this._timeOut;
     }
 
+    get revenue() {
+        return this._revenue * this.amount
+    }
+
     purchaseOne() {
         this._amount += 1;
         this._currCost *= this._coefficient;
@@ -55,9 +59,5 @@ export default class Shop {
         }
         console.log(totalCost);
         return totalCost;
-    }
-
-    set timeOut(timeOut: number) {
-        this._timeOut = timeOut
     }
 }

@@ -6,7 +6,8 @@ export default class Account {
     _shops: Shop[];
     _upgrades: [];
     _managers: Manager[];
-    // investors: [];
+    _managedShops: string[] = [];
+    // _investors: [];
 
     // make a new account from scratch
     constructor(cash: number = 0, shops: Shop[] = [], managers: Manager[] = []) {
@@ -53,31 +54,34 @@ export default class Account {
         if (managers.length === 0) {
             let newManagers: Manager[] = [];
 
-            let manager: Manager = new Manager('Cabe Johnson', 1000, false)
+            let manager: Manager = new Manager('Cabe Johnson', 'Lemonade', 1000, false)
             newManagers.push(manager);
 
-            manager = new Manager('Perry Black', 15000, false);
+            manager = new Manager('Perry Black', 'Newspaper Delivery', 15000, false);
             newManagers.push(manager);
 
-            manager = new Manager('W.W. Heisenbird', 100000, false);
+            manager = new Manager('W.W. Heisenbird', 'Car Wash', 100000, false);
             newManagers.push(manager);
 
-            manager = new Manager('Mama Sean', 500000, false);
+            manager = new Manager('Mama Sean', 'Pizza Delivery', 500000, false);
             newManagers.push(manager);
 
-            manager = new Manager('Jim Thorton', 1200000, false);
+            manager = new Manager('Jim Thorton', 'Donut Shop', 1200000, false);
             newManagers.push(manager);
 
-            manager = new Manager('Forest Trump', 10000000, false);
+            manager = new Manager('Forest Trump', 'Shrimp Boat', 10000000, false);
             newManagers.push(manager);
 
-            manager = new Manager('Dawn Cheri', 111111111, false);
+            manager = new Manager('Dawn Cheri', 'Hockey Team', 111111111, false);
             newManagers.push(manager);
 
-            manager = new Manager('The Dark Lord', 10000000000, false);
+            manager = new Manager('Stefani Speilburger', 'Movie Studio', 555555555, false);
+            newManagers.push(manager)
+
+            manager = new Manager('The Dark Lord', 'Bank', 10000000000, false);
             newManagers.push(manager);
 
-            manager = new Manager('Derrick Plainview', 100000000000, false);
+            manager = new Manager('Derrick Plainview', 'Oil Company', 100000000000, false);
             newManagers.push(manager);
 
             this._managers = newManagers;
@@ -104,6 +108,13 @@ export default class Account {
         return this._shops;
     }
 
+    set managedShops(shopName: string) {
+        console.log(shopName);
+        if (shopName) {
+            this._managedShops.push(shopName)
+        }
+    } 
+
     upgradeShop(shopName: string, amount: number) {
         const index: number = this.shops.findIndex((shop: Shop) => shop.name == shopName);
         // index not found
@@ -113,7 +124,26 @@ export default class Account {
         console.log(index);
         this.cash = -1 * this.shops[index].purchase(amount);
     }
-    /* getInvestors() {
-        return this.investors;
-    } */
+    
+    hireManager(managerName: string) {
+        let index: number = this.managers.findIndex((manager: Manager) => manager.name == managerName);
+        // index not found
+        if (index < 0) {
+            return;
+        }
+        // get name of the shop 
+        // its 1 : 1 index for managers + shops
+        this.managedShops = this.shops[index].name
+        // auto the business
+        this.autoBusiness(this.shops[index]);
+        // const auto = setInterval(this.cash = revenue, interval);
+    }
+
+    // Auto Manage business
+    autoBusiness(shop: Shop) {
+        this._managedShops[shop.name] = setInterval(() => {
+            this.cash = shop.revenue;
+            console.log(`${shop.name}: ${this.cash}`);
+        }, shop.timeout * 1000);
+    } 
 }
