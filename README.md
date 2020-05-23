@@ -1,5 +1,17 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+Requires running instance of redis!
+
+To run app: 
+cd /src/backend/data/
+node tester.js
+npm start
+
+#toDo
+1. Figure out why I can't call the getter/setter for Shop class in TestComponent.js
+2. Set timeOut + Interval things for clicking a store
+3. (Maybe) reading from DB to create an already existing account
+
 ## Available Scripts
 
 In the project directory, you can run:
