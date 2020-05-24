@@ -9,6 +9,7 @@ redis.on("ready", () => {
     redis.config("SET", "notify-keyspace-events", "Ex")
 })
 
+// All functions here return a promise
 module.exports = {
     subscribe: () => redis.subscribe(channel),
 

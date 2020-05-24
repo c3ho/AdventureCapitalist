@@ -137,12 +137,18 @@ class Account {
         }
     } 
 
+    /**
+     * 
+     * @param {*} shopName name of the Shop to be purchased
+     * @param {*} amount amount of the Shop to be purchased
+     */
     async purchaseShop(shopName, amount) {
         const index = this.shops.findIndex((shop) => shop.name === shopName);
         // index not found
         if (index < 0) {
             return;
         }
+        // toDo check here for cash >= purchaseCost
         this.cash = -1 * await this.shops[index].purchase(amount);
         // update and get the new minShopAmount
         this.minShopAmount = Math.min(...this.shops.map(shop => shop.amount));
