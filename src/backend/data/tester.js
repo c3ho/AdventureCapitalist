@@ -46,30 +46,14 @@ async function tester() {
         socket1.emit("cash", cash);
       } else {
         console.log("getCash got called", msg);
-
         const shop = await Shop.byId(msg);
-
-        /*
-        let cash;
-        let counter = 0;
-        let interval;
-        interval = setInterval(async () => {
-          if (counter >= 5) {
-            acc.cash = shop.revenue;
-            cash = await acc.cash;
-            console.log(`Cash: ${cash}`);
-            socket1.emit("cash", cash);
-            clearInterval(interval);
-          }
-          counter++;
-          console.log(counter);
-        }, 1000);*/
-
         // cannot exp/pexp with a 0 value, so we're adding 1 ms
-        await Shop.expire(shop.shopNumber, shop.timeout * 1000 + 1);
+        await Shop.expire(shop.shopNumber);
       }
     });
   });
+
+  // just emit to all channels
   redis.on("message", async (channel, message) => {
     const id = message.substring(4);
     const shop = await Shop.byId(id);
@@ -80,6 +64,17 @@ async function tester() {
     const cash = await acc.cash;
     console.log(cash);
     io1.emit("cash", cash);
+  });
+
+  // need a loop here to check if it is autoed
+  redis.on("message", async (channel, message) => {
+    if (message.substring(4) == "2") {
+      //Shop.expire expects an integer so we have to convert
+      let num = parseInt(message.substring(4));
+      console.log("Repeating!");
+
+      await Shop.expire(num);
+    }
   });
 }
 

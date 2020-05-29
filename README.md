@@ -2,15 +2,18 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Requires running instance of redis!
 
-To run app: 
-cd /src/backend/data/
-node tester.js
-npm start
+To run app:
+
+1. Have a running instance of Redis (command redis-server)
+2. (Optional) client instance of Redis
+3. cd /src/backend/data/
+4. node tester.js to start backend
+5. npm start to start frontend
 
 #toDo
-1. Figure out why I can't call the getter/setter for Shop class in TestComponent.js
-2. Set timeOut + Interval things for clicking a store
-3. (Maybe) reading from DB to create an already existing account
+
+1. (Maybe) reading from DB to create an already existing account
+2. Updating counter to reflect how much time is left until user receives revenue
 
 ## Available Scripts
 

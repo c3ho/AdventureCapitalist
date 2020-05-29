@@ -11,7 +11,7 @@ class Account {
     if (shops.length === 0) {
       let newShops = [];
 
-      let shop = new Shop(0, "Lemonade", 0, 1, 3.738, 1.07, 0);
+      let shop = new Shop(0, "Lemonade", 0, 1, 3.738, 1.07, 0.5);
       newShops.push(shop);
 
       shop = new Shop(1, "Newspaper Delivery", 0, 60, 60, 1.15, 3);
@@ -165,12 +165,18 @@ class Account {
     if (index < 0) {
       return;
     }
-    // toDo check here for cash >= purchaseCost
-    const num = await this.shops[index].purchase(amount);
+
+    // check purchase cost
+    const purchaseCost = this.shops[index].checkCost(amount);
+    if (this.cash < purchaseCost) {
+      return;
+    }
+    await this.shops[index].purchase(amount);
+
     console.log(`cash: ${this.cash}`);
-    console.log(`shop cost: ${num}`);
-    console.log(`diff: ${this.cash - num}`);
-    this.cash = -1 * num;
+    console.log(`shop cost: ${purchaseCost}`);
+    console.log(`diff: ${this.cash - purchaseCost}`);
+    this.cash = -1 * purchaseCost;
     // update and get the new minShopAmount
     this.minShopAmount = Math.min(...this.shops.map((shop) => shop.amount));
     // global shop # check up to 2000

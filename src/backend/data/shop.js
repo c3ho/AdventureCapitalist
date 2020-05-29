@@ -106,6 +106,17 @@ class Shop {
     return addShop(this);
   }
 
+  // returns the amount of money required to purchase given amount
+  checkCost(num) {
+    let totalCost = 0;
+    let cost = this.currCost;
+    for (let i = 0; i < num; i++) {
+      totalCost += cost;
+      cost += Math.round(cost * this.coefficient * 100) / 100;
+    }
+    return totalCost;
+  }
+
   // toDo can remove this
   static async create(shopData) {
     const shop = new Shop(
@@ -152,11 +163,6 @@ class Shop {
     return Promise.all(ids.map(getShop));
   }
 
-  purchaseOne() {
-    this._amount += 1;
-    this._currCost *= this._coefficient;
-  }
-
   /**
    * @param amount The number of times the user is upgrading shop
    * @returns Promise: totalCost Sum cost of upgrade
@@ -164,12 +170,9 @@ class Shop {
 
   // We're checking up to 2000 copies of a shop
   async purchase(num) {
-    let totalCost = 0;
-    for (let i = 0; i < num; i++) {
-      totalCost += this.currCost;
-      this.amount = 1;
-      this.currCost = Math.round(this.currCost * this.coefficient * 100) / 100;
-    }
+    this.amount = num;
+    this.currCost =
+      Math.round(this.checkCost(num) * this.coefficient * 100) / 100;
 
     // profit speed check
     if (this.amount > 24 && this.amount < 50) {
@@ -193,13 +196,15 @@ class Shop {
       this.revMultiplier = Math.pow(1400 / 100 + 1, 2) * 5;
     }
     await this.save();
-    return totalCost;
   }
 
-  static async expire(id, timeOut) {
+  static async expire(id) {
     const expNamespace = "exp:";
     const key = `${expNamespace}${id}`;
-    await expire(key, timeOut);
+    const shop = await this.byId(id);
+    shop.available = false;
+    await shop.save;
+    await expire(key, shop.timeout * 1000 + 1);
   }
 }
 
