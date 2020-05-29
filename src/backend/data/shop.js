@@ -106,7 +106,7 @@ class Shop {
     return addShop(this);
   }
 
-  // returns the amount of money required to purchase given amount
+  // calculates + returns the amount of money required to purchase given amount
   checkCost(num) {
     let totalCost = 0;
     let cost = this.currCost;
@@ -136,10 +136,6 @@ class Shop {
     return shopData.shopNumber;
   }
 
-  /* static async update(shopData) {
-    const 
-  } */
-
   // Returns a shop object of provided key from database
   static async byId(id) {
     const data = await getShop(id);
@@ -165,7 +161,6 @@ class Shop {
 
   /**
    * @param amount The number of times the user is upgrading shop
-   * @returns Promise: totalCost Sum cost of upgrade
    */
 
   // We're checking up to 2000 copies of a shop
