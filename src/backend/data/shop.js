@@ -1,4 +1,10 @@
-const { addShop, getShop, getShops, expire } = require("../utils/storage");
+const {
+  addShop,
+  getShop,
+  getShops,
+  expire,
+  timeLeft,
+} = require("../utils/storage");
 
 class Shop {
   constructor(
@@ -11,7 +17,8 @@ class Shop {
     timeOut = 0,
     revMultiplier = 1,
     baseTimerMultiplier = 1,
-    available = true
+    available = "true",
+    currTime = 0
   ) {
     this._shopNumber = shopNumber;
     this._name = name;
@@ -25,7 +32,7 @@ class Shop {
     this._revMultiplier = revMultiplier;
     this._baseTimerMultiplier = baseTimerMultiplier;
     this._available = available;
-    this._currTime = timeOut;
+    this._currTime = currTime;
   }
 
   get shopNumber() {
@@ -87,7 +94,7 @@ class Shop {
   }
 
   set available(ready) {
-    this._available = ready;
+    this._available = ready.toString();
   }
 
   get coefficient() {
@@ -102,6 +109,9 @@ class Shop {
     this._currCost = newCost;
   }
 
+  get timeOut() {
+    return this._timeOut;
+  }
   save() {
     return addShop(this);
   }
@@ -144,19 +154,23 @@ class Shop {
       data.name,
       parseInt(data.amount),
       parseInt(data.revenue),
-      parseInt(data.cost),
+      parseFloat(data.cost),
       parseFloat(data.coefficient),
       parseInt(data.timeout),
       parseFloat(data.revMultiplier),
       parseFloat(data.baseTimerMultiplier),
-      data.available === "true"
+      data.available === "true",
+      parseInt(data.currTime)
     );
+  }
+  static async timeLeft(id) {
+    return timeLeft(id);
   }
 
   // Returns array of all shops from database
   static async all() {
     const ids = await getShops();
-    return Promise.all(ids.map(getShop));
+    return Promise.all(await ids.map(Shop.byId));
   }
 
   /**
@@ -193,13 +207,17 @@ class Shop {
     await this.save();
   }
 
-  static async expire(id) {
-    const expNamespace = "exp:";
-    const key = `${expNamespace}${id}`;
+  static async expire(id, accountTimeMultiplier) {
     const shop = await this.byId(id);
-    shop.available = false;
-    await shop.save;
-    await expire(key, shop.timeout * 1000 + 1);
+    if (!shop.available) {
+      console.log(`Shop is currently not available`);
+      return;
+    }
+
+    await expire(
+      id,
+      shop.timeout / shop.baseTimerMultiplier / accountTimeMultiplier
+    );
   }
 }
 

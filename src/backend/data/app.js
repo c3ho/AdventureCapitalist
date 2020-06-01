@@ -9,16 +9,18 @@ redis.subscribe("__keyevent@0__:expired");
 
 async function tester() {
   const acc = new Account(5000);
+  await Promise.all(acc.shops.map((shop) => shop.save()));
   console.log(acc.cash);
 
   // Server
-  var io1 = require("socket.io").listen(8321);
+  const io1 = require("socket.io").listen(8321);
+  const io2 = require("socket.io-client")("http://localhost:8321");
 
   io1.on("connection", async function (socket1) {
     socket1.on("bar", async function (msg) {
       // Emits current shop info
       if (msg === "getShops") {
-        const shops = await acc.shops;
+        const shops = await Shop.all();
         socket1.emit("bar", shops);
       }
 
@@ -45,35 +47,52 @@ async function tester() {
         const cash = await acc.cash;
         socket1.emit("cash", cash);
       } else {
-        console.log("getCash got called", msg);
+        console.log("getCash for shop got called", msg);
         const shop = await Shop.byId(msg);
-        // cannot exp/pexp with a 0 value, so we're adding 1 ms
-        await Shop.expire(shop.shopNumber);
+        await Shop.expire(shop.shopNumber, acc.timerMultiplier);
+        shop.available = false;
+        let timerInterval = 250;
+
+        let interval = setInterval(async () => {
+          if (shop.currTime >= shop.timeOut) {
+            clearInterval(interval);
+            shop.available = true;
+            shop.currTime = 0;
+            await shop.save();
+          }
+          shop.currTime = shop.currTime + timerInterval;
+          await shop.save();
+
+          const shops = await Shop.all();
+          io1.emit("bar", shops);
+        }, timerInterval);
       }
     });
   });
 
-  // just emit to all channels
+  // just emit to all channels when timeout is completed
   redis.on("message", async (channel, message) => {
-    const id = message.substring(4);
+    const id = message.substring(9);
     const shop = await Shop.byId(id);
     console.log(
       `ShopID:${id} called with name:${shop.name}, timeout:${shop.timeout}`
     );
+
+    shop.available = true;
+    await shop.save();
     acc.cash = shop.revenue;
     const cash = await acc.cash;
     console.log(cash);
     io1.emit("cash", cash);
-  });
 
-  // need a loop here to check if it is autoed
-  redis.on("message", async (channel, message) => {
-    if (message.substring(4) == "2") {
+    // Testing auto for "car wash" shop here
+    if (message.substring(9) == "2") {
       //Shop.expire expects an integer so we have to convert
-      let num = parseInt(message.substring(4));
+      let num = parseInt(message.substring(9));
       console.log("Repeating!");
 
-      await Shop.expire(num);
+      //Using client socket instance, call the click action again
+      io2.emit("cash", 2);
     }
   });
 }

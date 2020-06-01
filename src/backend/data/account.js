@@ -11,31 +11,81 @@ class Account {
     if (shops.length === 0) {
       let newShops = [];
 
-      let shop = new Shop(0, "Lemonade", 0, 1, 3.738, 1.07, 0.5);
+      let shop = new Shop(0, "Lemonade", 0, 1, 3.738, 1.07, 0.5 * 1000, 1, 1);
       newShops.push(shop);
 
-      shop = new Shop(1, "Newspaper Delivery", 0, 60, 60, 1.15, 3);
+      shop = new Shop(1, "Newspaper Delivery", 0, 60, 60, 1.15, 3 * 1000, 1, 1);
       newShops.push(shop);
 
-      shop = new Shop(2, "Car Wash", 0, 540, 720, 1.14, 6);
+      shop = new Shop(2, "Car Wash", 0, 540, 720, 1.14, 6 * 1000, 1, 1);
       newShops.push(shop);
 
-      shop = new Shop(3, "Pizza Delivery", 0, 4320, 8640, 1.13, 12);
+      shop = new Shop(
+        3,
+        "Pizza Delivery",
+        0,
+        4320,
+        8640,
+        1.13,
+        12 * 1000,
+        1,
+        1
+      );
       newShops.push(shop);
 
-      shop = new Shop(4, "Donut Shop", 0, 4320, 103680, 1.12, 24);
+      shop = new Shop(4, "Donut Shop", 0, 4320, 103680, 1.12, 24 * 1000, 1, 1);
       newShops.push(shop);
 
-      shop = new Shop(5, "Shrimp Boat", 0, 622080, 1244160, 1.11, 96);
+      shop = new Shop(
+        5,
+        "Shrimp Boat",
+        0,
+        622080,
+        1244160,
+        1.11,
+        96 * 1000,
+        1,
+        1
+      );
       newShops.push(shop);
 
-      shop = new Shop(6, "Hockey Team", 0, 7464960, 14929920, 1.1, 384);
+      shop = new Shop(
+        6,
+        "Hockey Team",
+        0,
+        7464960,
+        14929920,
+        1.1,
+        384 * 1000,
+        1,
+        1
+      );
       newShops.push(shop);
 
-      shop = new Shop(7, "Movie Studio", 0, 89579520, 179159040, 1.09, 1536);
+      shop = new Shop(
+        7,
+        "Movie Studio",
+        0,
+        89579520,
+        179159040,
+        1.09,
+        1536 * 1000,
+        1,
+        1
+      );
       newShops.push(shop);
 
-      shop = new Shop(8, "Bank", 0, 1074954240, 2149908480, 1.08, 6144);
+      shop = new Shop(
+        8,
+        "Bank",
+        0,
+        1074954240,
+        2149908480,
+        1.08,
+        6144 * 1000,
+        1,
+        1
+      );
       newShops.push(shop);
 
       shop = new Shop(
@@ -45,7 +95,9 @@ class Account {
         29668737024,
         25798901760,
         1.07,
-        36864
+        36864 * 1000,
+        1,
+        1
       );
       newShops.push(shop);
 

@@ -44,11 +44,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ShopItem(props) {
   const {
-    item: { _amount, _name, _currTime, _currCost },
+    item: { _amount, _name, _currTime, _currCost, _timeOut },
     click,
     revClick,
     isDisabled,
+    isGetDisabled,
     cost,
+    currTime,
   } = props;
 
   const classes = useStyles();
@@ -61,10 +63,14 @@ export default function ShopItem(props) {
     revClick();
   }
   function convertTime(time) {
+    time /= 1000;
     let seconds = time % 60;
+    seconds = parseInt(seconds);
+    const displaySeconds = Math.round(seconds);
     if (seconds < 10) {
-      seconds = `0${seconds}`;
+      seconds = `0${displaySeconds}`;
     }
+
     time = (time - seconds) / 60;
     let minutes = time % 60;
     if (minutes < 10) {
@@ -84,6 +90,7 @@ export default function ShopItem(props) {
           <Grid container xs={12}>
             <Grid item xs={3}>
               <Button
+                disabled={!isGetDisabled}
                 className={classes.store}
                 onClick={(e) => handleRevClick(e)}
               >
@@ -95,7 +102,10 @@ export default function ShopItem(props) {
             <Grid item xs={8}>
               <Grid container direction="row">
                 <Grid item xs={12}>
-                  <LinearProgress variant="determinate" value={12} />
+                  <LinearProgress
+                    variant="determinate"
+                    value={((_currTime % _timeOut) / _timeOut) * 100}
+                  />
                 </Grid>
                 <Grid item xs={6}>
                   <Button
@@ -105,13 +115,13 @@ export default function ShopItem(props) {
                     color="Secondary"
                     onClick={(e) => handleClick(e)}
                   >
-                    {cost}
+                    {_currCost}
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
                   <Container className={classes.timer}>
                     <div className={classes.timerText}>
-                      {convertTime(_currTime)}
+                      {convertTime(_timeOut - _currTime)}
                     </div>
                   </Container>
                 </Grid>

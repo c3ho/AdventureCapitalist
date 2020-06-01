@@ -4,8 +4,10 @@ const gameKey = "adventureCapitalist";
 // Shop set
 const shops = "t:shops";
 const managers = "t:managers";
+const expired = "t:expired";
 
 redis.on("ready", () => {
+  //Set expire keyspace notifications
   redis.config("SET", "notify-keyspace-events", "Ex");
 });
 
@@ -14,7 +16,11 @@ module.exports = {
   subscribe: () => redis.subscribe(channel),
 
   expire: async (id, time) => {
-    await redis.multi().set(id, "bar").pexpire(id, time).exec();
+    await redis
+      .multi()
+      .set(expired.concat(id), "bar")
+      .pexpire(expired.concat(id), time)
+      .exec();
   },
 
   // Adds a shop to the database
@@ -60,7 +66,7 @@ module.exports = {
   getShop: (id) => redis.hgetall(id),
 
   // Returns time to live for specified key
-  timeLeft: (id) => redis.pttl(id),
+  timeLeft: (id) => redis.pttl(expired.concat(id)),
 
   // Adds the account to database
   addAccount: async (account) => {

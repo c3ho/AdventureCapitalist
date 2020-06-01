@@ -16,6 +16,7 @@ export default function TestComponent() {
     socket2.emit("bar", "getShops");
     socket2.on("bar", (msg) => {
       setShops(msg);
+      console.log("received msg", msg);
     });
 
     socket2.emit("cash", "getCash");
@@ -38,7 +39,6 @@ export default function TestComponent() {
   }
 
   // Mapping function to display all shops
-  // Error here with  the revClick, it should be using the shop getting revenue       shop.currCost
   // Revenue is currently returning even when amount == 0
   const listShops =
     shops.length > 0
@@ -47,15 +47,17 @@ export default function TestComponent() {
           // Have to use the data passed instead of Shop object to get costs to re-render
           return (
             <ShopItem
-              key={shop._shopNumber && shop._coefficient}
+              key={shop._shopNumber}
               // item={tempShop}
               item={shop}
               // click={(e) => handlePurchaseClick(tempShop._name, 1)}
               click={(e) => handlePurchaseClick(shop._name, 1)}
+              isGetDisabled={shop._available}
               isDisabled={shop._currCost > cash}
               // revClick={(e) => handleRevenueClick(tempShop._shopNumber)}
               revClick={(e) => handleRevenueClick(shop._shopNumber)}
               cost={shop._currCost}
+              currTime={shop._currTime}
             />
           );
         })
