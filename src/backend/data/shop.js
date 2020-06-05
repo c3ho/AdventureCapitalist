@@ -56,10 +56,6 @@ class Shop {
     return Math.round(100 * this._currCost) / 100;
   }
 
-  get timeout() {
-    return this._timeOut / this.baseTimerMultiplier;
-  }
-
   // Returns total revenue of shop
   get revenue() {
     return this._revenue;
@@ -137,7 +133,7 @@ class Shop {
       shopData.revenue,
       shopData.cost,
       shopData.coefficient,
-      shopData.timeout,
+      shopData.timeOut,
       shopData.revMultiplier,
       shopData.baseTimerMultiplier,
       // base cost
@@ -157,9 +153,9 @@ class Shop {
       parseInt(data.revenue),
       parseFloat(data.cost),
       parseFloat(data.coefficient),
-      parseInt(data.timeout),
-      parseFloat(data.revMultiplier),
-      parseFloat(data.baseTimerMultiplier),
+      parseInt(data.timeOut),
+      parseInt(data.revMultiplier),
+      parseInt(data.baseTimerMultiplier),
       data.available === "true",
       parseInt(data.currTime)
     );
@@ -217,7 +213,7 @@ class Shop {
 
     await expire(
       id,
-      shop.timeout / shop.baseTimerMultiplier / accountTimeMultiplier
+      shop.timeOut / shop.baseTimerMultiplier / accountTimeMultiplier
     );
   }
 }

@@ -5,6 +5,11 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { Avatar } from "@material-ui/core";
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -39,17 +44,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ManagerItem(props) {
+export default function UpgradeItem(props) {
   const {
-    item: { _name, _cost, _hired, _business },
-    hireClick,
+    item: { _name, _cost, _purchased, _business },
+    purchaseClick,
     isDisabled,
   } = props;
 
   const classes = useStyles();
 
   function handleClick(event) {
-    hireClick();
+    purchaseClick();
   }
 
   return (
@@ -60,7 +65,6 @@ export default function ManagerItem(props) {
           className={classes.container}
           alignItems="center"
           justify="center"
-          xs={8}
         >
           <Grid item xs={1}>
             <Avatar className={classes.avatar}>TMP</Avatar>
@@ -68,7 +72,7 @@ export default function ManagerItem(props) {
           <Grid item className={classes.text} xs={6}>
             {_name}
             <br />
-            {_cost}
+            {currencyFormatter.format(_cost)}
           </Grid>
           <Grid item xs={1}>
             <Button
@@ -76,7 +80,7 @@ export default function ManagerItem(props) {
               disabled={isDisabled}
               onClick={(e) => handleClick(e)}
             >
-              Hire!
+              Purchase!
             </Button>
           </Grid>
         </Grid>

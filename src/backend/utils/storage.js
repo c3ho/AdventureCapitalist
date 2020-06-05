@@ -5,6 +5,7 @@ const gameKey = "adventureCapitalist";
 const shops = "t:shops";
 const managers = "t:managers";
 const expired = "t:expired";
+const upgrades = "t:upgrades";
 
 redis.on("ready", () => {
   //Set expire keyspace notifications
@@ -40,8 +41,8 @@ module.exports = {
         shop.cost,
         "revenue",
         shop.revenue,
-        "timeout",
-        shop.timeout,
+        "timeOut",
+        shop.timeOut,
         "coefficient",
         shop.coefficient,
         "currCost",
@@ -115,4 +116,32 @@ module.exports = {
 
   // Returns information for a specific manager in the database
   getManager: (id) => redis.hgetall(id),
+
+  // Adds upgrade to database
+  addUpgrade: async (upgrade) => {
+    const upgradeKey = upgrade.upgradeNum.toString();
+    await redis
+      .multi()
+      .hmset(
+        upgradeKey,
+        "upgradeNum",
+        upgrade.upgradeNum,
+        "upgradeName",
+        upgrade.name,
+        "business",
+        upgrade.business,
+        "upgradeCost",
+        upgrade.cost,
+        "upgradePurchased",
+        upgrade.purchased.toString()
+      )
+      .sadd(upgrades, upgrade.upgradeNum)
+      .exec();
+  },
+
+  // Returns keys of managers in the database
+  getUpgrades: () => redis.smembers(upgrades),
+
+  // Returns information for a specific manager in the database
+  getUpgrade: (id) => redis.hgetall(id),
 };

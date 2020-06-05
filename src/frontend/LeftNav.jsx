@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import ManagersModal from "./ManagersModal";
-import ManagerItem from "./OptionComponent";
+
+import ManagerItem from "./ManagerModal";
+import UpgradeItem from "./UpgradeModal";
 import {
   Grid,
   Button,
   Avatar,
   makeStyles,
-  Modal,
   Fade,
-  Backdrop,
   Dialog,
 } from "@material-ui/core";
 const io2 = require("socket.io-client");
@@ -79,13 +78,23 @@ export default function Drawer(props) {
       setManagers(msg);
     });
 
+    socket2.emit("upgrades", "getUpgrades");
+    socket2.on("upgrades", (msg) => {
+      setUpgrades(msg);
+    });
+
     // Clean up
     return () => socket2.off;
-  }, [socket2]);
+  }, []);
 
   function handleManagerHireClick(managerNum) {
     console.log("setting manager!", managerNum);
     socket2.emit("managers", managerNum);
+  }
+
+  function handleUpgradePurchaseClick(upgradeNum) {
+    console.log("setting upgrade!", upgradeNum);
+    socket2.emit("upgrades", upgradeNum);
   }
 
   const listManagers =
@@ -96,11 +105,28 @@ export default function Drawer(props) {
               key={manager._managerNum}
               item={manager}
               hireClick={(e) => handleManagerHireClick(manager._managerNum)}
-              isDisabled={cash < manager._cost}
+              isDisabled={cash < manager._cost || manager._hired}
             />
           );
         })
       : null;
+
+  const listUpgrades =
+    upgrades.length > 0
+      ? upgrades.map((upgrade) => {
+          return (
+            <UpgradeItem
+              key={upgrade._upgradeNum}
+              item={upgrade}
+              purchaseClick={() =>
+                handleUpgradePurchaseClick(upgrade._upgradeNum)
+              }
+              isDisabled={cash < upgrade._cost || upgrade._purchased}
+            />
+          );
+        })
+      : null;
+
   //toDo: split modals into their own files, one for each upgrade / manager
   return (
     <div>
@@ -112,27 +138,20 @@ export default function Drawer(props) {
           <Button className={classes.buttons} onClick={handleUpgradeModalOpen}>
             Upgrades
           </Button>
-          <Modal
+          <Dialog
             aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
             open={upgradeOpen}
             onClose={handleUpgradeModalClose}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-              timeout: 500,
-            }}
+            fullWidth="md"
+            maxWidth="md"
           >
             <Fade in={upgradeOpen}>
               <div className={classes.paper}>
-                <h2 id="transition-modal-title">Transition modal</h2>
-                <p id="transition-modal-description">
-                  react-transition-group animates me.
-                </p>
+                <h2 id="transition-modal-title">Upgrades</h2>
+                {listUpgrades}
               </div>
             </Fade>
-          </Modal>
+          </Dialog>
         </Grid>
         <Grid item xs={12}>
           <Button className={classes.buttons} onClick={handleManagerModalOpen}>

@@ -1,10 +1,18 @@
 const Manager = require("./manager");
 const Shop = require("./shop");
+const Upgrade = require("./upgrade");
 const { addAccount } = require("../utils/storage");
 
 class Account {
   // make a new account from scratch
-  constructor(cash = 0, shops = [], managers = [], oldCash = 0) {
+  constructor(
+    cash = 0,
+    shops = [],
+    managers = [],
+    upgrades = [],
+    managedShops = [],
+    oldCash = 0
+  ) {
     this._cash = cash;
 
     // If new account create shop objects and assign to array
@@ -158,9 +166,104 @@ class Account {
 
       this._managers = newManagers;
     }
+
+    if (upgrades.length === 0) {
+      let newUpgrades = [];
+
+      let upgrade = new Upgrade(
+        21,
+        "Little Umbrellas",
+        "Lemonade",
+        250000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        22,
+        "Funny Pages",
+        "Newspaper Delivery",
+        500000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        23,
+        "Drive Through Wash",
+        "Car Wash",
+        1000000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(24, "Robot Cars", "Pizza Delivery", 5000000, false);
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        25,
+        "Pre-packaged Pastries",
+        "Donut Shop",
+        10000000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        26,
+        "Shrimp Satellite",
+        "Shrimp Boat",
+        25000000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(27, "Team Jet", "Hockey Team", 500000000, false);
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        28,
+        "3D Cameras",
+        "Movie Studio",
+        10000000000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        29,
+        "Gold Plated Vaults",
+        "Bank",
+        50000000000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        30,
+        "Spill Proof Tankers",
+        "Oil Company",
+        250000000000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      upgrade = new Upgrade(
+        31,
+        "Monopoly",
+        "All Business",
+        1000000000000,
+        false
+      );
+      newUpgrades.push(upgrade);
+
+      this._upgrades = newUpgrades;
+    }
+
     this._revenueMultiplier = 1;
     this._timerMultiplier = 1;
     this._minShopAmount = Infinity;
+    this._managedShops = managedShops;
     this._oldCash = oldCash;
   }
 
@@ -216,7 +319,10 @@ class Account {
     this._oldCash = amount;
   }
 
-  // toDo  REWRITE THIS
+  get managedShops() {
+    return this._managedShops;
+  }
+
   set managedShops(shopName) {
     console.log(shopName);
     if (shopName) {
@@ -325,18 +431,30 @@ class Account {
 
     // its 1 : 1 index for managers + shops
     this.managedShops = this.shops[index].name;
-    // auto the business
-    this.autoBusiness(this.shops[index]);
+    // immediately call click on the item
+    Shop.expire(index, this.timerMultiplier);
   }
 
-  // Auto Manage business
-  autoBusiness(shop) {
-    this._managedShops[shop.name] = setInterval(() => {
-      this.cash = shop.revenue;
-      console.log(`${shop.name}: ${this.cash}`);
-    }, shop.timeout * 1000);
-  }
+  async purchaseUpgrade(upgradeNum) {
+    let index = this.upgrades.findIndex(
+      (upgrade) => upgrade.upgradeNum === upgradeNum
+    );
 
+    // index not found
+    if (index < 0) {
+      return;
+    }
+
+    // Insufficient cash
+    if (this.cash < this.upgrades[index].cost) {
+      console.log("not enough cash!");
+      return;
+    }
+    console.log("upgrade cost", this.upgrades[index].cost);
+    this.cash = -1 * this.upgrades[index].cost;
+    this.upgrades[index].purchased = true;
+    await Promise.all([this.save(), this.upgrades[index].save()]);
+  }
   save() {
     return addAccount(this);
   }

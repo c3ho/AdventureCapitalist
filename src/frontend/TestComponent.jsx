@@ -5,6 +5,7 @@ import ShopItem from "./Shop";
 import Drawer from "./LeftNav";
 import LoadModal from "./LoadModal";
 import { Grid, makeStyles } from "@material-ui/core";
+
 const io2 = require("socket.io-client");
 let socket2;
 
@@ -16,6 +17,11 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "auto",
   },
 }));
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 export default function TestComponent() {
   const classes = useStyles();
@@ -37,7 +43,6 @@ export default function TestComponent() {
     socket2.emit("bar", "getShops");
     socket2.on("bar", (msg) => {
       setShops(msg);
-      console.log("received msg", msg);
     });
 
     socket2.emit("cash", "getCash");
@@ -45,12 +50,6 @@ export default function TestComponent() {
       const { newCash, difference } = msg;
       setCash(newCash);
       setDifference(difference);
-      console.log("diff", difference);
-    });
-
-    socket2.emit("managers", "getManagers");
-    socket2.on("managers", (msg) => {
-      setManagers(msg);
     });
 
     // Clean up
@@ -105,7 +104,7 @@ export default function TestComponent() {
         </Grid>
 
         <Grid item xs={9}>
-          {cash}
+          {currencyFormatter.format(cash)}
           {listShops}
         </Grid>
       </Grid>

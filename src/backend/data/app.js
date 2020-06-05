@@ -1,14 +1,17 @@
 const Account = require("./account");
 const Shop = require("./shop");
 const Manager = require("./manager");
+const Upgrade = require("./upgrade");
+
 const Redis = require("ioredis");
 const redis = new Redis();
 // Subscribe to keyspace notifications for expired keys
 redis.subscribe("__keyevent@0__:expired");
 
 async function tester() {
-  const acc = new Account(5000);
+  const acc = new Account(500000);
   await Promise.all(acc.shops.map((shop) => shop.save()));
+  await Promise.all(acc.managers.map((manager) => manager.save()));
   await acc.save();
   console.log(acc.cash);
 
@@ -44,7 +47,9 @@ async function tester() {
     // Handles cash functions, such as purchase or getting revenue from user click
     socket1.on("cash", async function (msg) {
       async function tick(shop, interval, timerInterval) {
-        if (shop.currTime >= shop.timeOut) {
+        // find the new timeOut (this includes upgrade bonus)
+        const currTimeOut = shop.timeOut / shop.baseTimerMultiplier;
+        if (shop.currTime >= currTimeOut) {
           clearInterval(interval);
           shop.available = true;
           shop.currTime = 0;
@@ -64,8 +69,10 @@ async function tester() {
         const difference = newCash - oldCash;
         socket1.emit("cash", { newCash, difference });
       } else {
-        console.log("getCash for shop got called", msg);
         const shop = await Shop.byId(msg);
+        if (!shop.available) {
+          return;
+        }
         await Shop.expire(shop.shopNumber, acc.timerMultiplier);
         shop.available = false;
 
@@ -91,6 +98,21 @@ async function tester() {
         socket1.emit("cash", { newCash });
       }
     });
+
+    socket1.on("upgrades", async function (msg) {
+      if (msg === "getUpgrades") {
+        const upgrades = await acc.upgrades;
+        socket1.emit("upgrades", upgrades);
+      } else {
+        console.log("purchaseUpgrade!");
+        await acc.purchaseUpgrade(msg);
+        const upgrades = await acc.upgrades;
+        socket1.emit("upgrades", upgrades);
+        const newCash = await acc.cash;
+        console.log("cash after upgrade", newCash);
+        socket1.emit("cash", { newCash });
+      }
+    });
   });
 
   // just emit to all channels when timeout is completed
@@ -98,23 +120,33 @@ async function tester() {
     const id = message.substring(9);
     const shop = await Shop.byId(id);
     console.log(
-      `ShopID:${id} called with name:${shop.name}, timeout:${shop.timeout}`
+      `ShopID:${id} called with name:${shop.name}, timeout:${shop.timeOut}`
     );
 
     shop.available = true;
-    await shop.save();
-    acc.cash = shop.revenue * shop.amount * shop.revMultiplier;
-    await acc.save();
+    // Check if the upgrade for the shop has been purchased
+    if (acc.upgrades[id].purchased) {
+      console.log("purchased!");
+      acc.cash =
+        shop.revenue *
+        shop.amount *
+        shop.revMultiplier *
+        acc.revenueMultiplier *
+        3;
+    } else {
+      acc.cash =
+        shop.revenue * shop.amount * shop.revMultiplier * acc.revenueMultiplier;
+    }
+    await Promise.all([acc.save(), shop.save()]);
     io1.emit("cash", { newCash: acc.cash });
 
-    // Testing auto for "car wash" shop here
-    if (message.substring(9) == "2") {
+    if (acc.managers[id].hired) {
       //Shop.expire expects an integer so we have to convert
       let num = parseInt(message.substring(9));
       console.log("Repeating!");
 
       //Using client socket instance, call the click action again
-      io2.emit("cash", 2);
+      io2.emit("cash", num);
     }
   });
 }

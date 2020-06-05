@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { makeStyles, Modal, Fade, Backdrop } from "@material-ui/core";
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -63,7 +68,8 @@ export default function LoadModal(props) {
           <div className={classes.paper}>
             <h2 id="transition-modal-title">Adventure Capitalist</h2>
             <p id="transition-modal-description">
-              You have earned ${difference} while you were away!
+              You have earned {currencyFormatter.format(difference)} while you
+              were away!
             </p>
           </div>
         </Fade>

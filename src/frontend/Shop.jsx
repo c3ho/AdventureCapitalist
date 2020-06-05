@@ -6,6 +6,11 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -33,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   timerText: {
     flex: "true",
     color: "white",
-    paddingTop: "2px",
+    paddingTop: "8px",
     fontSize: "20px",
   },
   store: {
@@ -45,7 +50,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ShopItem(props) {
   const {
-    item: { _amount, _name, _currTime, _currCost, _timeOut },
+    item: {
+      _amount,
+      _name,
+      _currTime,
+      _currCost,
+      _timeOut,
+      _baseTimerMultiplier,
+    },
     click,
     revClick,
     isDisabled,
@@ -89,7 +101,12 @@ export default function ShopItem(props) {
     if (_name === "Car Wash") {
       console.log("progress", _currTime);
       // debugger;
-      console.log("diff", _timeOut < 1000 ? 100 : (_currTime / _timeOut) * 100);
+      console.log(
+        "diff",
+        _timeOut * _baseTimerMultiplier < 1000
+          ? 100
+          : (_currTime / (_timeOut / _baseTimerMultiplier)) * 100
+      );
     }
 
     return `${displayHours}:${displayMinutes}:${displaySeconds}`;
@@ -99,7 +116,7 @@ export default function ShopItem(props) {
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <Grid container direction="row">
-          <Grid container xs={12}>
+          <Grid container>
             <Grid item xs={3}>
               <Button
                 disabled={!isGetDisabled}
@@ -118,7 +135,9 @@ export default function ShopItem(props) {
                     variant="determinate"
                     value={
                       // If timeOut on shop is less than 1s we will always assign 100% progress
-                      _timeOut < 1000 ? 100 : (_currTime / _timeOut) * 100
+                      _timeOut / _baseTimerMultiplier < 1000
+                        ? 100
+                        : (_currTime / (_timeOut / _baseTimerMultiplier)) * 100
                     }
                   />
                 </Grid>
@@ -130,13 +149,13 @@ export default function ShopItem(props) {
                     color="Secondary"
                     onClick={(e) => handleClick(e)}
                   >
-                    {_currCost}
+                    {currencyFormatter.format(_currCost)}
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
                   <Container className={classes.timer}>
                     <div className={classes.timerText}>
-                      {convertTime(_timeOut - _currTime)}
+                      {convertTime(_timeOut / _baseTimerMultiplier - _currTime)}
                     </div>
                   </Container>
                 </Grid>
