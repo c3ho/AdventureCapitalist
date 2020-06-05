@@ -1,18 +1,39 @@
 import React, { useEffect, useState } from "react";
+
 // import Shop from "../backend/data/shop";
 import ShopItem from "./Shop";
-import { Container } from "@material-ui/core";
-var io2 = require("socket.io-client");
-var socket2 = io2.connect("http://localhost:8321");
+import Drawer from "./LeftNav";
+import LoadModal from "./LoadModal";
+import { Grid, makeStyles } from "@material-ui/core";
+const io2 = require("socket.io-client");
+let socket2;
+
+const useStyles = makeStyles((theme) => ({
+  drawer: {
+    maxHeight: "auto",
+    backgroundColor: "#574f47",
+    flex: "true",
+    maxWidth: "auto",
+  },
+}));
 
 export default function TestComponent() {
+  const classes = useStyles();
+
   const [shops, setShops] = useState([]);
   const [cash, setCash] = useState(0);
+  const [difference, setDifference] = useState(0);
+  const [managers, setManagers] = useState([]);
+
+  // Open the LoadModal to inform user how much has been earned since they were away
+  const [open, setOpen] = useState(true);
 
   // On component mount, subscribe to webserver and get current cash and shop amounts
   useEffect(() => {
     socket2 = io2.connect("http://localhost:8321");
-
+    window.addEventListener("beforeunload", () => {
+      socket2.emit("bar", "close");
+    });
     socket2.emit("bar", "getShops");
     socket2.on("bar", (msg) => {
       setShops(msg);
@@ -21,10 +42,22 @@ export default function TestComponent() {
 
     socket2.emit("cash", "getCash");
     socket2.on("cash", (msg) => {
-      setCash(msg);
+      const { newCash, difference } = msg;
+      setCash(newCash);
+      setDifference(difference);
+      console.log("diff", difference);
     });
+
+    socket2.emit("managers", "getManagers");
+    socket2.on("managers", (msg) => {
+      setManagers(msg);
+    });
+
     // Clean up
-    return () => socket2.off;
+    return () => {
+      window.removeEventListener("beforeunload");
+      socket2.off();
+    };
   }, []);
 
   // Handles user clicking to purchase shop
@@ -65,8 +98,17 @@ export default function TestComponent() {
 
   return (
     <div>
-      <Container>{cash}</Container>
-      <Container>{listShops}</Container>
+      <LoadModal open={open} difference={difference} />
+      <Grid container direction="row">
+        <Grid item className={classes.drawer} xs={2}>
+          <Drawer cash={cash} />
+        </Grid>
+
+        <Grid item xs={9}>
+          {cash}
+          {listShops}
+        </Grid>
+      </Grid>
     </div>
   );
 }

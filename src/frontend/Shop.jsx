@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     maxWidth: "50%",
     height: "150%",
+    transition: "none",
   },
   button: {
     flex: "true",
@@ -62,25 +63,36 @@ export default function ShopItem(props) {
   function handleRevClick(event) {
     revClick();
   }
+
+  // Converts the current time from milliseconds to hh:mm:ss
   function convertTime(time) {
     time /= 1000;
     let seconds = time % 60;
-    seconds = parseInt(seconds);
-    const displaySeconds = Math.round(seconds);
+    seconds = seconds;
+    let displaySeconds = Math.floor(seconds);
     if (seconds < 10) {
-      seconds = `0${displaySeconds}`;
+      displaySeconds = `0${displaySeconds}`;
     }
 
     time = (time - seconds) / 60;
     let minutes = time % 60;
+    let displayMinutes = Math.round(minutes);
     if (minutes < 10) {
-      minutes = `0${minutes}`;
+      displayMinutes = `0${displayMinutes}`;
     }
+
     let hours = (time - minutes) / 60;
+    let displayHours = Math.round(hours);
     if (hours < 10) {
-      hours = `0${hours}`;
+      displayHours = `0${displayHours}`;
     }
-    return `${hours}:${minutes}:${seconds}`;
+    if (_name === "Car Wash") {
+      console.log("progress", _currTime);
+      // debugger;
+      console.log("diff", _timeOut < 1000 ? 100 : (_currTime / _timeOut) * 100);
+    }
+
+    return `${displayHours}:${displayMinutes}:${displaySeconds}`;
   }
 
   return (
@@ -104,7 +116,10 @@ export default function ShopItem(props) {
                 <Grid item xs={12}>
                   <LinearProgress
                     variant="determinate"
-                    value={((_currTime % _timeOut) / _timeOut) * 100}
+                    value={
+                      // If timeOut on shop is less than 1s we will always assign 100% progress
+                      _timeOut < 1000 ? 100 : (_currTime / _timeOut) * 100
+                    }
                   />
                 </Grid>
                 <Grid item xs={6}>

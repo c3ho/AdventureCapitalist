@@ -81,7 +81,9 @@ module.exports = {
         "revenueMultiplier",
         account.revenueMultiplier,
         "minShopAmount",
-        account.minShopAmount
+        account.minShopAmount,
+        "oldCash",
+        account.oldCash
       )
       .exec();
   },

@@ -13,6 +13,7 @@ Assumptions:
 1. This app only supports one player
 2. The game bonuses only go up to 2000 of each business
 3. There are only businesses from earth that are available
+4. Only upgrades until Monopoly (1 trillion) are available
 
 ## Available Scripts
 

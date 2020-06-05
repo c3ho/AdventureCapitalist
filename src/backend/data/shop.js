@@ -62,7 +62,7 @@ class Shop {
 
   // Returns total revenue of shop
   get revenue() {
-    return this._revenue * this._amount * this._revMultiplier;
+    return this._revenue;
   }
 
   get revMultiplier() {
@@ -112,6 +112,7 @@ class Shop {
   get timeOut() {
     return this._timeOut;
   }
+
   save() {
     return addShop(this);
   }

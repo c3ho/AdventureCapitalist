@@ -4,7 +4,7 @@ const { addAccount } = require("../utils/storage");
 
 class Account {
   // make a new account from scratch
-  constructor(cash = 0, shops = [], managers = []) {
+  constructor(cash = 0, shops = [], managers = [], oldCash = 0) {
     this._cash = cash;
 
     // If new account create shop objects and assign to array
@@ -108,28 +108,35 @@ class Account {
     if (managers.length === 0) {
       let newManagers = [];
 
-      let manager = new Manager("Cabe Johnson", "Lemonade", 1000, false);
-      newManagers.push(manager);
-
-      manager = new Manager("Perry Black", "Newspaper Delivery", 15000, false);
-      newManagers.push(manager);
-
-      manager = new Manager("W.W. Heisenbird", "Car Wash", 100000, false);
-      newManagers.push(manager);
-
-      manager = new Manager("Mama Sean", "Pizza Delivery", 500000, false);
-      newManagers.push(manager);
-
-      manager = new Manager("Jim Thorton", "Donut Shop", 1200000, false);
-      newManagers.push(manager);
-
-      manager = new Manager("Forest Trump", "Shrimp Boat", 10000000, false);
-      newManagers.push(manager);
-
-      manager = new Manager("Dawn Cheri", "Hockey Team", 111111111, false);
+      let manager = new Manager(11, "Cabe Johnson", "Lemonade", 1000, false);
       newManagers.push(manager);
 
       manager = new Manager(
+        12,
+        "Perry Black",
+        "Newspaper Delivery",
+        15000,
+        false
+      );
+      newManagers.push(manager);
+
+      manager = new Manager(13, "W.W. Heisenbird", "Car Wash", 100000, false);
+      newManagers.push(manager);
+
+      manager = new Manager(14, "Mama Sean", "Pizza Delivery", 500000, false);
+      newManagers.push(manager);
+
+      manager = new Manager(15, "Jim Thorton", "Donut Shop", 1200000, false);
+      newManagers.push(manager);
+
+      manager = new Manager(16, "Forest Trump", "Shrimp Boat", 10000000, false);
+      newManagers.push(manager);
+
+      manager = new Manager(17, "Dawn Cheri", "Hockey Team", 111111111, false);
+      newManagers.push(manager);
+
+      manager = new Manager(
+        18,
         "Stefani Speilburger",
         "Movie Studio",
         555555555,
@@ -137,10 +144,11 @@ class Account {
       );
       newManagers.push(manager);
 
-      manager = new Manager("The Dark Lord", "Bank", 10000000000, false);
+      manager = new Manager(19, "The Dark Lord", "Bank", 10000000000, false);
       newManagers.push(manager);
 
       manager = new Manager(
+        20,
         "Derrick Plainview",
         "Oil Company",
         100000000000,
@@ -153,6 +161,7 @@ class Account {
     this._revenueMultiplier = 1;
     this._timerMultiplier = 1;
     this._minShopAmount = Infinity;
+    this._oldCash = oldCash;
   }
 
   get cash() {
@@ -199,6 +208,15 @@ class Account {
     this._minShopAmount = num;
   }
 
+  get oldCash() {
+    return this._oldCash;
+  }
+
+  set oldCash(amount) {
+    this._oldCash = amount;
+  }
+
+  // toDo  REWRITE THIS
   set managedShops(shopName) {
     console.log(shopName);
     if (shopName) {
@@ -285,14 +303,26 @@ class Account {
     await this.save();
   }
 
-  hireManager(managerName) {
+  async hireManager(managerNum) {
     let index = this.managers.findIndex(
-      (manager) => manager.name === managerName
+      (manager) => manager.managerNum === managerNum
     );
+
     // index not found
     if (index < 0) {
       return;
     }
+
+    // Insufficient cash
+    if (this.cash < this.managers[index].cost) {
+      console.log("not enough cash!");
+      return;
+    }
+
+    this.cash = -1 * this.managers[index].cost;
+    this.managers[index].hired = true;
+    await Promise.all([this.save(), this.managers[index].save()]);
+
     // its 1 : 1 index for managers + shops
     this.managedShops = this.shops[index].name;
     // auto the business
