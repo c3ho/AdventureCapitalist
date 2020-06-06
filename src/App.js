@@ -1,14 +1,11 @@
 import React from "react";
 import "./App.css";
-import TestComponent from "./frontend/TestComponent";
+import GameComponent from "./frontend/GameComponent";
 
 // import ShopItem from './frontend/Shop'
 
 function App() {
-  return (
-    <TestComponent />
-    //<ShopItem />
-  );
+  return <GameComponent />;
 }
 
 export default App;

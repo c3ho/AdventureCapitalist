@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
     flex: "true",
     maxWidth: "auto",
   },
+  shops: {
+    backgroundColor: "#736960",
+  },
 }));
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -23,7 +26,7 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-export default function TestComponent() {
+export default function GameComponent() {
   const classes = useStyles();
 
   const [shops, setShops] = useState([]);
@@ -80,13 +83,10 @@ export default function TestComponent() {
           return (
             <ShopItem
               key={shop._shopNumber}
-              // item={tempShop}
               item={shop}
-              // click={(e) => handlePurchaseClick(tempShop._name, 1)}
               click={(e) => handlePurchaseClick(shop._name, 1)}
               isGetDisabled={shop._available}
               isDisabled={shop._currCost > cash}
-              // revClick={(e) => handleRevenueClick(tempShop._shopNumber)}
               revClick={(e) => handleRevenueClick(shop._shopNumber)}
               cost={shop._currCost}
               currTime={shop._currTime}
@@ -103,8 +103,8 @@ export default function TestComponent() {
           <Drawer cash={cash} />
         </Grid>
 
-        <Grid item xs={9}>
-          {currencyFormatter.format(cash)}
+        <Grid item xs={9} className={classes.shops}>
+          <div font-size="18px">{currencyFormatter.format(cash)}</div>
           {listShops}
         </Grid>
       </Grid>

@@ -30,11 +30,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     verticalAlign: "middle",
     wordWrap: true,
+    backgroundColor: "#7092a2",
+    color: "black",
   },
   buttons: {
     textAlign: "center",
     width: "100%",
     flex: "true",
+    backgroundColor: "#e7ded3",
+    "&:hover": {
+      backgroundColor: "#e7ded3",
+    },
   },
 
   paper: {

@@ -17,6 +17,7 @@ async function tester() {
 
   // Server
   const io1 = require("socket.io").listen(8321);
+  // Client connection
   const io2 = require("socket.io-client")("http://localhost:8321");
 
   io1.on("connection", async function (socket1) {
@@ -47,8 +48,10 @@ async function tester() {
     // Handles cash functions, such as purchase or getting revenue from user click
     socket1.on("cash", async function (msg) {
       async function tick(shop, interval, timerInterval) {
-        // find the new timeOut (this includes upgrade bonus)
+        // Calculate the new timeOut (this includes upgrade bonus)
         const currTimeOut = shop.timeOut / shop.baseTimerMultiplier;
+
+        // Resets currentTime for Shop if it is completed
         if (shop.currTime >= currTimeOut) {
           clearInterval(interval);
           shop.available = true;
@@ -56,19 +59,21 @@ async function tester() {
         } else {
           shop.currTime = shop.currTime + timerInterval;
         }
-        // Adds interval time to currTime every tick
-        await shop.save();
 
+        await shop.save();
         const shops = await Shop.all();
         io1.emit("bar", shops);
       }
 
+      // Emits current cash and amount earned from managed businesses
       if (msg === "getCash") {
         const newCash = await acc.cash;
         const oldCash = await acc.oldCash;
         const difference = newCash - oldCash;
         socket1.emit("cash", { newCash, difference });
-      } else {
+      }
+      // Handles clicking on a shop to earn cash
+      else {
         const shop = await Shop.byId(msg);
         if (!shop.available) {
           return;
@@ -85,11 +90,14 @@ async function tester() {
       }
     });
 
+    // Emits manager info
     socket1.on("managers", async function (msg) {
       if (msg === "getManagers") {
         const managers = await acc.managers;
         socket1.emit("managers", managers);
-      } else {
+      }
+      // Handles hiring managers
+      else {
         console.log("hireManager!");
         await acc.hireManager(msg);
         const managers = await acc.managers;
@@ -99,16 +107,20 @@ async function tester() {
       }
     });
 
+    // Emits upgrade info
     socket1.on("upgrades", async function (msg) {
       if (msg === "getUpgrades") {
         const upgrades = await acc.upgrades;
         socket1.emit("upgrades", upgrades);
-      } else {
+      }
+      // Handles purchasing upgrades
+      else {
         console.log("purchaseUpgrade!");
         await acc.purchaseUpgrade(msg);
         const upgrades = await acc.upgrades;
         socket1.emit("upgrades", upgrades);
         const newCash = await acc.cash;
+        // toDo remove
         console.log("cash after upgrade", newCash);
         socket1.emit("cash", { newCash });
       }

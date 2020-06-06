@@ -23,11 +23,14 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "50%",
     height: "150%",
     transition: "none",
+    backgroundColor: "#736960",
   },
   button: {
     flex: "true",
     width: "100%",
     height: "50px",
+    color: "black",
+    backgroundColor: "orange",
   },
   timer: {
     backgroundColor: "grey",
@@ -37,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
   timerText: {
     flex: "true",
-    color: "white",
+    color: "black",
     paddingTop: "8px",
     fontSize: "20px",
   },
@@ -45,6 +48,8 @@ const useStyles = makeStyles((theme) => ({
     flex: "true",
     fontSize: "12px",
     height: "100%",
+    width: "100%",
+    backgroundColor: "#8bb8cf",
   },
 }));
 
@@ -62,8 +67,6 @@ export default function ShopItem(props) {
     revClick,
     isDisabled,
     isGetDisabled,
-    cost,
-    currTime,
   } = props;
 
   const classes = useStyles();
@@ -98,17 +101,6 @@ export default function ShopItem(props) {
     if (hours < 10) {
       displayHours = `0${displayHours}`;
     }
-    if (_name === "Car Wash") {
-      console.log("progress", _currTime);
-      // debugger;
-      console.log(
-        "diff",
-        _timeOut * _baseTimerMultiplier < 1000
-          ? 100
-          : (_currTime / (_timeOut / _baseTimerMultiplier)) * 100
-      );
-    }
-
     return `${displayHours}:${displayMinutes}:${displaySeconds}`;
   }
 
@@ -119,7 +111,7 @@ export default function ShopItem(props) {
           <Grid container>
             <Grid item xs={3}>
               <Button
-                disabled={!isGetDisabled}
+                disabled={!isGetDisabled || _amount < 1}
                 className={classes.store}
                 onClick={(e) => handleRevClick(e)}
               >

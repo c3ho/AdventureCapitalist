@@ -15,6 +15,16 @@ Assumptions:
 3. There are only businesses from earth that are available
 4. Only upgrades until Monopoly (1 trillion) are available
 
+Current Issues:
+
+1. Managed businesses are not being fired after when timer is finished
+2. Issues purchasing a shop when a business is counting down (includes auto), this should probably affect when bonuses are being applied also
+3. Purchasing cash on the front-end is being updated after purchasing upgrades/managers. A refresh is required.
+
+toDo:
+
+1. Make code more consistent (using db(Redis) vs in-memory storage)
+
 ## Available Scripts
 
 In the project directory, you can run:
