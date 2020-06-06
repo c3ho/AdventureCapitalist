@@ -24,6 +24,7 @@ Current Issues:
 toDo:
 
 1. Make code more consistent (using db(Redis) vs in-memory storage)
+2. Refactor currencyFormatter as an export
 
 ## Available Scripts
 
