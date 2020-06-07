@@ -1,12 +1,16 @@
-Requires running instance of redis!
+Requires running instance of Redis!
+Find more info about Redis [here](https://redis.io/)
+Redis can be run natively or through docker using the following [image](https://hub.docker.com/_/redis/)
+
 An attempt to build a clone of Adventure Capitalist, Redis/Node/Express/React
 To run app:
 
-1. Have a running instance of Redis (redis-server)
-2. (Optional) client instance of Redis
-3. cd /src/backend/data/
-4. node app.js to start backend
-5. npm start to start frontend
+1. Clone the project (https://github.com/c3ho/AdventureCapitalist.git)
+2. Install the project dependencies with npm install or npm -i
+3. Have a running instance of Redis
+4. cd /src/backend/data/
+5. node app.js to start backend
+6. npm start to start frontend
 
 Assumptions:
 
