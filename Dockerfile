@@ -16,7 +16,5 @@ COPY . .
 # Add the metadata to the image to describe which port the container is listening to 
 EXPOSE 3000
 
-# RUN cd /adventure-capitalist/src/backend/data && node app.js
-
 # Run the specified command within the container.
 CMD [ "npm", "start" ]
