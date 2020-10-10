@@ -17,4 +17,9 @@ COPY . .
 EXPOSE 3000
 
 # Run the specified command within the container.
-CMD [ "npm", "start" ]
+RUN npm start
+
+EXPOSE 8321
+
+WORKDIR "/adventure-capitalist/src/backend/data"
+CMD ["sh", "-c", "node app.js"]

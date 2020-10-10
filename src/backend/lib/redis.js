@@ -1,9 +1,11 @@
-const Redis = require('ioredis')
+const Redis = require("ioredis");
 // const MockRedis = require('ioredis-mock');
-const url = require('url');
+const url = require("url");
 
+const REDIS_URL = "redis://127.0.0.1";
+const REDIS_PORT = 6379;
 // If you need to set the Redis URL, do it in REDIS_URL
-const redisUrl = `${process.env.REDIS_URL}:${process.env.REDIS_PORT}` || 'redis://127.0.0.1:6379';
+const redisUrl = `${REDIS_URL}:${REDIS_PORT}` || "redis://127.0.0.1:6379";
 
 // Set MOCK_REDIS=1 to mock, MOCK_REDIS= to use real redis
 // const useMockRedis = process.env.MOCK_REDIS;
@@ -14,7 +16,9 @@ const RedisConstructor = Redis;
 function createRedisClient() {
   try {
     const { port, host } = url.parse(redisUrl, true);
-    return new RedisConstructor(port, host, { password: process.env.REDIS_PASSWORD });
+    return new RedisConstructor(port, host, {
+      password: process.env.REDIS_PASSWORD,
+    });
   } catch (error) {
     const message = `Unable to parse port and host from "${redisUrl}"`;
     console.log(message);
