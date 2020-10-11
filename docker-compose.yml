@@ -1,14 +1,12 @@
-version: "3.8"
+version: "3"
 
 services:
-  redis:
-    image: redis:latest
-    command: ["redis-server", "--appendonly", "yes"]
-
   web:
     build:
       context: .
       dockerfile: Dockerfile
+    # need the env file for some reason
+    # env_file: .env
     ports:
       - "8000:3000"
       - "9000:8321"
@@ -16,7 +14,11 @@ services:
       - REDIS_URL=redis://redis:6379
     depends_on:
       - redis
-    links:
-      - redis
     # need this line or react-app scripts will crash and exit with 0
     stdin_open: true
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]

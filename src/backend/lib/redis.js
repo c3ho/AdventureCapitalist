@@ -2,7 +2,7 @@ const Redis = require("ioredis");
 // const MockRedis = require('ioredis-mock');
 const url = require("url");
 
-const REDIS_URL = "redis://127.0.0.1";
+const REDIS_URL = "localhost://127.0.0.1";
 const REDIS_PORT = 6379;
 // If you need to set the Redis URL, do it in REDIS_URL
 const redisUrl = `${REDIS_URL}:${REDIS_PORT}` || "redis://127.0.0.1:6379";

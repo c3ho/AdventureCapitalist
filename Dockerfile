@@ -21,5 +21,7 @@ RUN npm start
 
 EXPOSE 8321
 
+# Testing CMD shell vs RUN node app.js
 WORKDIR "/adventure-capitalist/src/backend/data"
-CMD ["sh", "-c", "node app.js"]
+# CMD ["sh", "-c", "node app.js"]
+RUN node app.js
